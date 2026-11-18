@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}{{ t('qr_title') }} · {{ t('app_name') }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div class="page-head__text">
+    <h1 class="page-title">{{ t('qr_title') }}</h1>
+    <p class="page-subtitle">{{ t('qr_subtitle') }}</p>
+  </div>
+</div>
+
+<section class="card composer" aria-label="{{ t('qr_title') }}">
+  <div class="field">
+    <div class="field__top">
+      <label class="label" for="draft">{{ t('enter_text') }}</label>
+      <button type="button" class="btn btn-ghost btn-xs" id="clear-draft" disabled>{{ icon('eraser') }}<span>{{ t('clear') }}</span></button>
+    </div>
+    <div class="textarea-shell">
+      <textarea id="draft" class="textarea textarea--bare" rows="5" dir="auto" spellcheck="true"
+                placeholder="{{ t('enter_placeholder') }}" aria-describedby="draft-hint"></textarea>
+      <div class="textarea-shell__foot">
+        <span class="textarea-shell__hint" id="draft-hint">{{ icon('mic') }}<span>{{ t('dictate_hint') }}</span></span>
+        <span class="textarea-shell__count" id="draft-count" aria-live="off">{{ tn('chars', 0) }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="polish-bar">
+    <button type="button" class="btn btn-primary" id="polish-btn" disabled aria-describedby="polish-prompt">
+      {{ icon('wand') }}<span id="polish-btn-text">{{ t('polish') }}</span>
+    </button>
+    <button type="button" class="btn btn-ghost btn-sm" id="polish-cancel" hidden>{{ t('cancel') }}</button>
+    <a class="chip chip--link" id="polish-prompt" href="{{ url_for('main.settings_page') }}" title="{{ t('change') }}">
+      {{ icon('settings') }}<span dir="auto">{% if active_prompt %}{{ t('polish_prompt', name=active_prompt.name) }}{% else %}{{ t('no_active_note') }}{% endif %}</span>
+    </a>
+    <span class="polish-bar__note" id="polish-note">{{ t('polish_shortcut') }}</span>
+  </div>
+
+  <div class="field">
+    <span class="label" id="polished-label">{{ t('polished_output') }}</span>
+    <div class="output output--polished is-empty" role="region" aria-labelledby="polished-label">
+      <button type="button" class="btn-icon output__copy" id="copy-polished" disabled
+              aria-label="{{ t('copy_output') }}" title="{{ t('copy') }}">{{ icon('copy') }}</button>
+      <div class="output__text" id="polished-text" dir="auto"></div>
+      <p class="output__placeholder">{{ t('polished_empty') }}</p>
+    </div>
+  </div>
+</section>
+
+<section class="pinned" aria-labelledby="pinned-title">
+  <div class="section-head">
+    <div class="section-head__text">
+      <h2 class="section-title" id="pinned-title">{{ icon('pin', 'section-title__icon') }}{{ t('pinned_replies') }}</h2>
+      {% if pinned %}<p class="section-hint">{{ t('pinned_hint') }}</p>{% endif %}
+    </div>
+    {% if pinned|length > 6 %}
+    <div class="search search--sm">
+      <span class="search__icon">{{ icon('search') }}</span>
+      <input type="search" class="input" id="pinned-filter" placeholder="{{ t('filter_pinned_ph') }}"
+             aria-label="{{ t('filter_pinned') }}" dir="auto">
+    </div>
+    {% endif %}
+  </div>
+
+  {% if pinned %}
+  <ul class="pinned-grid" id="pinned-grid">
+    {% for tpl in pinned %}
+    <li data-search="{{ tpl.search }}">
+      <button type="button" class="pin-card" data-template-id="{{ tpl.id }}">
+        <span class="pin-card__icon">{{ icon('pin-filled') }}</span>
+        <span class="pin-card__title" dir="auto">{{ tpl.title }}</span>
+        <span class="pin-card__go">{{ icon('arrow', 'icon--flip') }}</span>
+      </button>
+    </li>
+    {% endfor %}
+  </ul>
+  <p class="empty-inline" id="pinned-noresults" hidden></p>
+  {% else %}
+  <div class="empty-state">
+    <span class="empty-state__icon">{{ icon('pin') }}</span>
+    <h3 class="empty-state__title">{{ t('pinned_empty_title') }}</h3>
+    <p class="empty-state__body">{{ t('pinned_empty_body') }}</p>
+    <a class="btn btn-secondary" href="{{ url_for('main.manage_templates') }}">{{ t('go_manage') }}{{ icon('arrow', 'icon--flip') }}</a>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

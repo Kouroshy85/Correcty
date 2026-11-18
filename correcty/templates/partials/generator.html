@@ -1,0 +1,39 @@
+<dialog class="modal modal--generator" id="generator" aria-labelledby="gen-title">
+  <div class="modal__panel">
+    <header class="modal__head">
+      <span class="modal__icon">{{ icon('message') }}</span>
+      <div class="modal__titles">
+        <h2 class="modal__title" id="gen-title" dir="auto"></h2>
+        <p class="modal__desc" id="gen-desc" dir="auto" hidden></p>
+      </div>
+      <span class="badge badge--soft" id="gen-preview-badge" hidden>{{ t('preview_badge') }}</span>
+      <button type="button" class="btn-icon modal__close" data-close aria-label="{{ t('close') }}" title="{{ t('close') }}">{{ icon('x') }}</button>
+    </header>
+
+    <div class="modal__body">
+      <p class="gen-status" id="gen-loading" hidden><span class="spinner" aria-hidden="true"></span>{{ t('loading') }}</p>
+      <div class="gen-status gen-status--error" id="gen-load-error" hidden>
+        <span id="gen-load-error-text">{{ t('load_failed') }}</span>
+        <button type="button" class="btn btn-secondary btn-sm" id="gen-retry">{{ t('retry') }}</button>
+      </div>
+
+      <form class="gen-form" id="gen-form" novalidate autocomplete="off"></form>
+
+      <div class="gen-output" id="gen-output-block">
+        <div class="gen-output__head">
+          <span class="label" id="gen-output-label">{{ t('gen_message') }}</span>
+          <span class="live-status" id="gen-live"><span class="live-status__dot" aria-hidden="true"></span><span id="gen-live-text">{{ t('gen_live') }}</span></span>
+        </div>
+        <div class="output output--generated" id="gen-output" role="region" aria-labelledby="gen-output-label" tabindex="0"></div>
+        <p class="hint gen-output__hint" id="gen-output-hint" hidden></p>
+      </div>
+    </div>
+
+    <footer class="modal__foot">
+      <span class="kbd-hint" aria-hidden="true">{{ t('shortcut_hint') }}</span>
+      <button type="button" class="btn btn-secondary" data-close>{{ t('cancel') }}</button>
+      <button type="button" class="btn btn-primary" id="gen-copy">{{ icon('copy') }}<span>{{ t('copy_message') }}</span></button>
+    </footer>
+  </div>
+  <div class="toast-region toast-region--modal" aria-live="polite"></div>
+</dialog>

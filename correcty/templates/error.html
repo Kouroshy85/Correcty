@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}{{ t('page_not_found_title') }} · {{ t('app_name') }}{% endblock %}
+{% block content %}
+<div class="empty-state empty-state--page">
+  <span class="empty-state__icon">{{ icon('alert') }}</span>
+  {% if server_error %}
+  <h1 class="empty-state__title">{{ t('err_server_error') }}</h1>
+  {% else %}
+  <h1 class="empty-state__title">{{ t('page_not_found_title') }}</h1>
+  <p class="empty-state__body">{{ t('page_not_found_body') }}</p>
+  {% endif %}
+  <a class="btn btn-primary" href="{{ url_for('main.quick_reply') }}">{{ t('go_home') }}</a>
+</div>
+{% endblock %}

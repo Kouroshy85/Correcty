@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="{{ lang }}" dir="{{ dir }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>{% block title %}{{ t('app_name') }}{% endblock %}</title>
+  <link rel="icon" type="image/svg+xml" href="{{ asset('img/favicon.svg') }}">
+  <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
+</head>
+<body data-page="{{ page }}">
+  {% include "partials/icons.html" %}
+  <a class="skip-link" href="#main">{{ t('skip_to_content') }}</a>
+
+  <header class="app-header">
+    <div class="app-header__inner">
+      <a class="brand" href="{{ url_for('main.quick_reply') }}">
+        <span class="brand__text">
+          <span class="brand__name">Correcty</span>
+        </span>
+      </a>
+
+      <nav class="main-nav" aria-label="{{ t('nav_label') }}">
+        <a class="main-nav__link" href="{{ url_for('main.quick_reply') }}"
+           {% if page == 'quick' %}aria-current="page"{% endif %}>
+          {{ icon('bolt') }}<span>{{ t('nav_quick') }}</span>
+        </a>
+        <a class="main-nav__link" href="{{ url_for('main.manage_templates') }}"
+           {% if page in ('manage', 'editor') %}aria-current="page"{% endif %}>
+          {{ icon('templates') }}<span class="main-nav__long">{{ t('nav_manage') }}</span><span class="main-nav__short">{{ t('nav_manage_short') }}</span>
+        </a>
+        <a class="main-nav__link" href="{{ url_for('main.settings_page') }}"
+           {% if page == 'settings' %}aria-current="page"{% endif %}>
+          {{ icon('settings') }}<span>{{ t('nav_settings') }}</span>
+        </a>
+      </nav>
+
+      <div class="header-actions">
+        <div class="lang-switch" role="group" aria-label="{{ t('language') }}">
+          <a href="{{ url_for('main.set_language', code='en', next=next_url) }}" lang="en" hreflang="en"
+             {% if lang == 'en' %}aria-current="true"{% endif %}>EN</a>
+          <a href="{{ url_for('main.set_language', code='fa', next=next_url) }}" lang="fa" hreflang="fa"
+             {% if lang == 'fa' %}aria-current="true"{% endif %}>فا</a>
+        </div>
+        {% if page != 'editor' %}
+        <a class="btn btn-soft btn-sm header-new" href="{{ url_for('main.new_template') }}">
+          {{ icon('plus') }}<span>{{ t('new_template') }}</span>
+        </a>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+
+  <main id="main" class="page" tabindex="-1">
+    {% block content %}{% endblock %}
+  </main>
+
+  {% include "partials/generator.html" %}
+  {% include "partials/confirm.html" %}
+  <div class="toast-region" id="toast-region" aria-live="polite"></div>
+
+  <script id="i18n-data" type="application/json">{{ i18n_client|tojson }}</script>
+  {% block page_data %}{% endblock %}
+  <script type="module" src="{{ asset('js/' ~ script) }}"></script>
+</body>
+</html>

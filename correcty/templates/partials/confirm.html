@@ -1,0 +1,16 @@
+<dialog class="modal modal--confirm" id="confirm-dialog" aria-labelledby="confirm-title" aria-describedby="confirm-body">
+  <div class="modal__panel">
+    <div class="confirm">
+      <span class="confirm__icon">{{ icon('alert') }}</span>
+      <div class="confirm__text">
+        <h2 class="confirm__title" id="confirm-title" dir="auto"></h2>
+        <p class="confirm__body" id="confirm-body"></p>
+      </div>
+    </div>
+    <footer class="modal__foot">
+      <button type="button" class="btn btn-secondary" data-cancel></button>
+      <button type="button" class="btn btn-danger" data-confirm></button>
+    </footer>
+  </div>
+  <div class="toast-region toast-region--modal" aria-live="polite"></div>
+</dialog>

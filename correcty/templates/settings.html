@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}{{ t('settings_title') }} · {{ t('app_name') }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div class="page-head__text">
+    <h1 class="page-title">{{ t('settings_title') }}</h1>
+    <p class="page-subtitle">{{ t('settings_subtitle') }}</p>
+  </div>
+</div>
+
+<div class="tabs" role="tablist" aria-label="{{ t('settings_title') }}">
+  <button type="button" class="tabs__tab" role="tab" id="tab-prompts" data-tab="prompts" aria-controls="panel-prompts"
+          aria-selected="{{ 'true' if tab == 'prompts' else 'false' }}" tabindex="{{ '0' if tab == 'prompts' else '-1' }}">
+    {{ icon('wand') }}<span>{{ t('tab_prompts') }}</span>
+  </button>
+  <button type="button" class="tabs__tab" role="tab" id="tab-ai" data-tab="ai" aria-controls="panel-ai"
+          aria-selected="{{ 'true' if tab == 'ai' else 'false' }}" tabindex="{{ '0' if tab == 'ai' else '-1' }}">
+    {{ icon('cpu') }}<span>{{ t('tab_ai') }}</span>
+  </button>
+</div>
+
+<section class="tab-panel" role="tabpanel" id="panel-prompts" aria-labelledby="tab-prompts" {% if tab != 'prompts' %}hidden{% endif %}>
+  <div class="section-head">
+    <p class="section-hint">{{ t('prompts_hint') }}</p>
+    <button type="button" class="btn btn-primary btn-sm" id="new-prompt">{{ icon('plus') }}<span>{{ t('new_prompt') }}</span></button>
+  </div>
+  <p class="notice" id="no-active" hidden>{{ icon('info') }}<span>{{ t('no_active_note') }}</span></p>
+  <ul class="prompt-list" id="prompt-list"></ul>
+  <div class="empty-state empty-state--compact" id="prompts-empty" hidden>
+    <span class="empty-state__icon">{{ icon('wand') }}</span>
+    <p class="empty-state__body">{{ t('prompts_empty') }}</p>
+  </div>
+  <p class="hint prompt-rules">{{ icon('info') }}<span>{{ t('prompt_rules_note') }}</span></p>
+</section>
+
+<section class="tab-panel" role="tabpanel" id="panel-ai" aria-labelledby="tab-ai" {% if tab != 'ai' %}hidden{% endif %}>
+  <div class="card card--pad stack">
+    <p class="hint">{{ t('ai_hint') }}</p>
+    <div class="status-box" id="ai-status" aria-live="polite">
+      <span class="status-box__dot" aria-hidden="true"></span>
+      <span class="status-box__text" id="ai-status-text">{{ t('ai_checking') }}</span>
+      <button type="button" class="btn btn-secondary btn-sm" id="ai-recheck">{{ t('check_again') }}</button>
+    </div>
+    <form class="stack" id="ai-form" novalidate autocomplete="off">
+      <div class="field" data-field="model">
+        <label class="label" for="ai-model">{{ t('ai_model') }}</label>
+        <input class="input" id="ai-model" list="ai-model-list" dir="ltr" value="{{ ai.model }}" aria-describedby="ai-model-hint">
+        <datalist id="ai-model-list"></datalist>
+        <p class="hint" id="ai-model-hint"></p>
+      </div>
+      <div class="field" data-field="ollama_url">
+        <label class="label" for="ai-url">{{ t('ai_url') }}</label>
+        <input class="input" id="ai-url" dir="ltr" value="{{ ai.ollama_url }}" aria-describedby="ai-url-hint">
+        <p class="hint" id="ai-url-hint">{{ t('ai_url_hint') }}</p>
+      </div>
+      <div><button type="submit" class="btn btn-primary" id="ai-save">{{ icon('check') }}<span>{{ t('save_settings') }}</span></button></div>
+    </form>
+  </div>
+</section>
+{% endblock %}
+{% block page_data %}
+<script id="settings-data" type="application/json">{{ {'prompts': prompts}|tojson }}</script>
+{% endblock %}

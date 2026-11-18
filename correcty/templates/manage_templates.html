@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}{{ t('manage_title') }} · {{ t('app_name') }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div class="page-head__text">
+    <h1 class="page-title">{{ t('manage_title') }}</h1>
+    <p class="page-subtitle">{{ t('manage_subtitle') }}</p>
+  </div>
+  <a class="btn btn-primary" href="{{ url_for('main.new_template') }}">{{ icon('plus') }}<span>{{ t('create_template') }}</span></a>
+</div>
+
+<div class="toolbar" {% if not templates %}hidden{% endif %} id="tpl-toolbar">
+  <div class="search">
+    <span class="search__icon">{{ icon('search') }}</span>
+    <input type="search" class="input" id="tpl-search" placeholder="{{ t('search_ph') }}"
+           aria-label="{{ t('search_label') }}" aria-controls="tpl-list" dir="auto">
+    <kbd class="search__kbd" aria-hidden="true">/</kbd>
+  </div>
+  <span class="toolbar__count" id="tpl-count" aria-live="polite">{{ tn('count', templates|length) }}</span>
+</div>
+
+<div class="card list-card" id="tpl-card" {% if not templates %}hidden{% endif %}>
+  <ul class="tpl-list" id="tpl-list">
+    {% for tpl in templates %}
+    <li class="tpl-row{% if tpl.pinned %} is-pinned{% endif %}" data-id="{{ tpl.id }}" data-title="{{ tpl.title }}" data-search="{{ tpl.search }}">
+      <div class="tpl-row__main">
+        <div class="tpl-row__titleline">
+          <a class="tpl-row__title" href="{{ url_for('main.edit_template', template_id=tpl.id) }}" dir="auto">{{ tpl.title }}</a>
+          <span class="badge badge--pin" data-pin-badge {% if not tpl.pinned %}hidden{% endif %}>{{ icon('pin-filled') }}{{ t('pinned_badge') }}</span>
+        </div>
+        <p class="tpl-row__preview" dir="auto">{{ tpl.preview }}</p>
+        <div class="tpl-row__meta">
+          <span class="chip">{{ icon('braces') }}{% if tpl.inputs %}{{ tn('inputs', tpl.inputs) }}{% else %}{{ t('no_inputs') }}{% endif %}</span>
+          {% if tpl.sections %}<span class="chip">{{ icon('split') }}{{ tn('sections', tpl.sections) }}</span>{% endif %}
+        </div>
+      </div>
+      <div class="tpl-row__actions">
+        <button type="button" class="btn btn-secondary btn-sm" data-action="use"
+                aria-label="{{ t('use_label', title=tpl.title) }}">{{ icon('bolt') }}<span>{{ t('use') }}</span></button>
+        <button type="button" class="btn-icon btn-icon--pin" data-action="pin" aria-pressed="{{ 'true' if tpl.pinned else 'false' }}"
+                aria-label="{{ t('pin_label', title=tpl.title) }}" title="{{ t('unpin') if tpl.pinned else t('pin') }}">
+          <svg class="icon icon--pin-off" aria-hidden="true" focusable="false"><use href="#i-pin"></use></svg>
+          <svg class="icon icon--pin-on" aria-hidden="true" focusable="false"><use href="#i-pin-filled"></use></svg>
+        </button>
+        <a class="btn-icon" href="{{ url_for('main.edit_template', template_id=tpl.id) }}"
+           aria-label="{{ t('edit_label', title=tpl.title) }}" title="{{ t('edit') }}">{{ icon('pencil') }}</a>
+        <button type="button" class="btn-icon btn-icon--danger" data-action="delete"
+                aria-label="{{ t('delete_label', title=tpl.title) }}" title="{{ t('delete') }}">{{ icon('trash') }}</button>
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+
+<div class="empty-state" id="tpl-empty" {% if templates %}hidden{% endif %}>
+  <span class="empty-state__icon">{{ icon('inbox') }}</span>
+  <h2 class="empty-state__title">{{ t('empty_title') }}</h2>
+  <p class="empty-state__body">{{ t('empty_body') }}</p>
+  <a class="btn btn-primary" href="{{ url_for('main.new_template') }}">{{ icon('plus') }}<span>{{ t('create_template') }}</span></a>
+</div>
+
+<div class="empty-state empty-state--compact" id="tpl-noresults" hidden>
+  <span class="empty-state__icon">{{ icon('search') }}</span>
+  <h2 class="empty-state__title" id="tpl-noresults-title"></h2>
+  <p class="empty-state__body">{{ t('no_results_body') }}</p>
+  <button type="button" class="btn btn-secondary" id="tpl-clear-search">{{ t('clear_search') }}</button>
+</div>
+{% endblock %}

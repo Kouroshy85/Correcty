@@ -1,0 +1,4 @@
+# Only needed to build the Windows app (see README section 8). Not needed to run Correcty.
+-r requirements.txt
+pyinstaller>=6.16,<7
+pillow>=11  # installer\make_icon.py only

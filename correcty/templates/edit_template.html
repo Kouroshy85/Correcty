@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% set heading = t('editor_new') if is_new else t('editor_edit') %}
+{% block title %}{{ heading }} · {{ t('app_name') }}{% endblock %}
+{% block content %}
+<form class="editor" id="editor" novalidate autocomplete="off">
+  <div class="page-head">
+    <div class="page-head__text">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="{{ url_for('main.manage_templates') }}">{{ t('nav_manage') }}</a>
+        {{ icon('chevron', 'icon--flip') }}
+        <span aria-current="page">{{ heading }}</span>
+      </nav>
+      <h1 class="page-title">{{ heading }}</h1>
+      <p class="page-subtitle">{{ t('editor_subtitle') }}</p>
+    </div>
+  </div>
+
+  <div class="editor-grid">
+    <div class="editor-main">
+      <section class="card card--pad stack" aria-label="{{ t('f_title') }}">
+        <div class="field" data-field="title">
+          <label class="label" for="f-title">{{ t('f_title') }}<span class="req" aria-hidden="true">*</span></label>
+          <input class="input" id="f-title" name="title" maxlength="120" required dir="auto" autocomplete="off"
+                 value="{{ template.title }}" placeholder="{{ t('f_title_ph') }}">
+          <p class="field-error" hidden></p>
+        </div>
+        <div class="field" data-field="description">
+          <label class="label" for="f-desc">{{ t('f_desc') }} <span class="label__opt">({{ t('optional') }})</span></label>
+          <input class="input" id="f-desc" name="description" maxlength="300" dir="auto" autocomplete="off"
+                 value="{{ template.description }}" placeholder="{{ t('f_desc_ph') }}">
+          <p class="field-error" hidden></p>
+        </div>
+        <div class="switch-row">
+          <span class="switch">
+            <input type="checkbox" id="f-pinned" name="pinned" role="switch" aria-describedby="f-pinned-hint"
+                   {% if template.pinned %}checked{% endif %}>
+            <span class="switch__track" aria-hidden="true"></span>
+          </span>
+          <span class="switch-row__text">
+            <label class="switch-row__label" for="f-pinned">{{ t('f_pin') }}</label>
+            <span class="hint" id="f-pinned-hint">{{ t('f_pin_hint') }}</span>
+          </span>
+        </div>
+      </section>
+
+      <section class="card card--pad">
+        <div class="field" data-field="body">
+          <div class="field__top">
+            <label class="label label--lg" for="f-body">{{ t('f_body') }}<span class="req" aria-hidden="true">*</span></label>
+            <button type="button" class="btn btn-ghost btn-xs" data-insert-for="f-body" aria-haspopup="dialog">{{ icon('braces') }}<span>{{ t('insert_input') }}</span></button>
+          </div>
+          <textarea class="textarea textarea--template" id="f-body" name="body" rows="7" dir="auto" maxlength="10000"
+                    required aria-describedby="f-body-hint">{{ template.body }}</textarea>
+          <p class="hint" id="f-body-hint">{{ t('f_body_hint') }}</p>
+          <p class="field-error" hidden></p>
+        </div>
+      </section>
+
+      <section class="card card--pad" aria-labelledby="sections-title">
+        <div class="card-head">
+          <h2 class="card-title" id="sections-title">{{ icon('split') }}{{ t('sections_title') }}</h2>
+          <p class="hint">{{ t('sections_hint') }}</p>
+        </div>
+        <div class="field" data-field="sections"><p class="field-error" hidden></p></div>
+        <ol class="section-list" id="section-list"></ol>
+        <p class="empty-inline" id="sections-empty" hidden>{{ t('sections_empty') }}</p>
+        <button type="button" class="btn btn-secondary btn-sm" id="add-section">{{ icon('plus') }}<span>{{ t('add_section') }}</span></button>
+      </section>
+
+      <section class="card card--pad">
+        <div class="field" data-field="closing">
+          <div class="field__top">
+            <label class="label label--lg" for="f-closing">{{ t('closing_title') }} <span class="label__opt">({{ t('optional') }})</span></label>
+            <button type="button" class="btn btn-ghost btn-xs" data-insert-for="f-closing" aria-haspopup="dialog">{{ icon('braces') }}<span>{{ t('insert_input') }}</span></button>
+          </div>
+          <textarea class="textarea textarea--template" id="f-closing" name="closing" rows="3" dir="auto" maxlength="5000"
+                    placeholder="{{ t('closing_ph') }}" aria-describedby="f-closing-hint">{{ template.closing }}</textarea>
+          <p class="hint" id="f-closing-hint">{{ t('closing_hint') }}</p>
+          <p class="field-error" hidden></p>
+        </div>
+      </section>
+    </div>
+
+    <aside class="editor-side">
+      <section class="card card--pad inputs-panel" aria-labelledby="inputs-title">
+        <div class="card-head">
+          <h2 class="card-title" id="inputs-title">{{ icon('braces') }}{{ t('inputs_title') }}<span class="count-pill" id="inputs-count">0</span></h2>
+          <p class="hint">{{ t('inputs_hint') }}</p>
+        </div>
+        <div class="field" data-field="variables"><p class="field-error" hidden></p></div>
+        <p class="empty-inline" id="vars-empty" hidden>{{ t('inputs_empty') }}</p>
+        <ul class="var-list" id="var-list"></ul>
+      </section>
+    </aside>
+  </div>
+
+  <div class="action-bar">
+    <div class="action-bar__inner">
+      <span class="action-bar__status" id="dirty-status"></span>
+      <a class="btn btn-ghost" href="{{ url_for('main.manage_templates') }}" id="cancel-btn">{{ t('cancel') }}</a>
+      <button type="button" class="btn btn-secondary" id="preview-btn">{{ icon('eye') }}<span>{{ t('preview') }}</span></button>
+      <button type="submit" class="btn btn-primary" id="save-btn">{{ icon('check') }}<span>{{ t('save') }}</span></button>
+    </div>
+  </div>
+</form>
+
+<div class="popover" id="insert-popover" role="dialog" aria-labelledby="insert-title" hidden>
+  <p class="popover__title" id="insert-title">{{ t('insert_title') }}</p>
+  <div class="popover__section" id="insert-existing-wrap">
+    <p class="popover__label">{{ t('insert_existing') }}</p>
+    <div class="chip-list" id="insert-existing"></div>
+  </div>
+  <div class="popover__section">
+    <label class="popover__label" for="insert-name">{{ t('insert_new') }}</label>
+    <div class="inline-form">
+      <input class="input input--sm" id="insert-name" placeholder="{{ t('insert_new_ph') }}" dir="auto" autocomplete="off">
+      <button type="button" class="btn btn-primary btn-sm" id="insert-add">{{ t('insert_add') }}</button>
+    </div>
+    <p class="field-error" id="insert-error" hidden></p>
+    <p class="hint popover__preview" id="insert-preview" dir="ltr"></p>
+  </div>
+</div>
+{% endblock %}
+{% block page_data %}
+<script id="editor-data" type="application/json">{{ {'template': template, 'isNew': is_new}|tojson }}</script>
+{% endblock %}
